@@ -33,7 +33,16 @@ sudo systemctl start docker
 sudo systemctl enable docker
 ```
 
-**Add your user to docker group (to avoid sudo):**
+**Windows:**
+1. Download and install [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop)
+2. Enable WSL2 backend (recommended for GPU support)
+3. Restart your computer
+
+**macOS:**
+1. Download and install [Docker Desktop for Mac](https://www.docker.com/products/docker-desktop)
+2. Start Docker Desktop
+
+**Add your user to docker group (Linux only):**
 ```bash
 sudo usermod -aG docker $USER
 newgrp docker  # Or logout/login
@@ -57,10 +66,31 @@ sudo pacman -S nvidia-container-toolkit
 sudo systemctl restart docker
 ```
 
+**Windows (GPU Support):**
+
+NVIDIA GPUs in Docker only work through WSL2:
+
+1. Install WSL2:
+   ```powershell
+   wsl --install
+   ```
+
+2. Install NVIDIA drivers for WSL2 from [NVIDIA website](https://developer.nvidia.com/cuda/wsl)
+
+3. Inside WSL2:
+   ```bash
+   sudo apt install nvidia-cuda-toolkit
+   ```
+
+4. Use Docker from WSL2 terminal for GPU access
+
 **Test GPU access:**
 ```bash
+# Linux/WSL2
 docker run --rm --gpus all nvidia/cuda:12.1.0-base-ubuntu22.04 nvidia-smi
 ```
+
+**Note for Windows users:** Without WSL2, Docker runs in CPU-only mode (30-60s per sentence vs 5-10s with GPU)
 
 ### Python 3.11 (for manual installation)
 
@@ -93,6 +123,8 @@ docker-compose up
 ```
 
 **Or use helper scripts:**
+
+**Linux/macOS:**
 ```bash
 # Build image
 ./docker-build.sh
@@ -108,6 +140,21 @@ docker-compose up
 
 # Generate speech
 ./docker-run.sh clone "Hello world!"
+```
+
+**Windows (PowerShell):**
+```powershell
+# Run web UI
+.\docker-run.ps1 web
+
+# Run interactive CLI
+.\docker-run.ps1 cli
+
+# Generate speech
+.\docker-run.ps1 clone "Hello world!"
+
+# See all options
+.\docker-run.ps1 help
 ```
 
 **Pull from Docker Hub:**
@@ -128,6 +175,7 @@ docker run --rm -it --gpus all \
 
 **Note:** Requires Python 3.9-3.11 (Python 3.13+ not supported by Coqui TTS)
 
+**Linux:**
 ```bash
 cd voice-cloning
 
@@ -150,7 +198,32 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install TTS librosa soundfile pydub sounddevice gradio
 
 # Install system dependency (for recording)
-sudo pacman -S portaudio
+sudo pacman -S portaudio  # Arch
+sudo apt install portaudio19-dev  # Ubuntu/Debian
+```
+
+**Windows:**
+```powershell
+cd voice-cloning
+
+# Download and install Python 3.11 from python.org
+# Then:
+
+# Create virtual environment
+python -m venv venv
+.\venv\Scripts\activate
+
+# Install dependencies
+pip install --upgrade pip wheel setuptools
+
+# Install PyTorch (CPU version for Windows without WSL2)
+pip install torch torchvision torchaudio
+
+# Or for CUDA (if you have compatible GPU and CUDA installed)
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# Install voice cloning packages
+pip install TTS librosa soundfile pydub sounddevice gradio
 ```
 
 ### 2. Record Your Voice
@@ -551,6 +624,42 @@ sudo systemctl restart docker
 docker run ... -p 7861:7860 ...
 # or
 python web_ui.py --port 7861
+```
+
+### Windows-Specific Issues
+
+**Docker Desktop not starting:**
+```powershell
+# Ensure WSL2 is installed and updated
+wsl --update
+wsl --set-default-version 2
+
+# Restart Docker Desktop
+# Check Docker Desktop settings → General → "Use WSL 2 based engine" is enabled
+```
+
+**PowerShell execution policy error:**
+```powershell
+# Run PowerShell as Administrator
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Then try again
+.\docker-run.ps1 web
+```
+
+**GPU not detected on Windows:**
+- NVIDIA GPUs only work through WSL2, not native Windows Docker
+- Install WSL2 and run Docker from WSL2 terminal
+- Or accept CPU-only mode (slower but functional)
+
+**Volume mount not working:**
+```powershell
+# Ensure file sharing is enabled in Docker Desktop
+# Settings → Resources → File Sharing
+# Add the voice-cloning directory
+
+# Use full paths if relative paths fail
+docker run -v C:\Users\YourName\voice-cloning\voices:/app/voices ...
 ```
 
 ### No audio generated
