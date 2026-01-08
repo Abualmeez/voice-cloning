@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Models and cache
+models/
+.cache/
+*.pth
+*.ckpt
+
+# Outputs
+outputs/*.wav
+!outputs/.gitkeep
+
+# Voice samples (keep structure, ignore recordings)
+voices/*/sample_*.wav
+voices/*/combined.wav
+!voices/README.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# System
+.env
+*.log

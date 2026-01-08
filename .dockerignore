@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Models and cache (downloaded at runtime)
+models/*
+!models/.gitkeep
+.cache/
+*.pth
+*.ckpt
+
+# Outputs (generated at runtime)
+outputs/*
+!outputs/.gitkeep
+
+# Voice samples (user-provided at runtime)
+voices/*/sample_*.wav
+voices/*/combined.wav
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# System
+.DS_Store
+.env
+*.log
+*.tmp
+
+# Test files
+tests/
+test_*.py
+*_test.py

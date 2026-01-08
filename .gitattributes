@@ -1,0 +1,21 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Shell scripts should use LF
+*.sh text eol=lf
+
+# Python files should use LF
+*.py text eol=lf
+
+# Markdown files
+*.md text eol=lf
+
+# YAML files
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Explicitly mark binary files
+*.wav binary
+*.mp3 binary
+*.pth binary
+*.ckpt binary

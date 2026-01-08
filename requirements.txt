@@ -1,0 +1,26 @@
+# Python Version: 3.9, 3.10, or 3.11 (NOT 3.13+)
+# Coqui TTS does not support Python 3.12+
+
+# Core TTS and Deep Learning
+TTS==0.22.0
+torch==2.5.1
+torchaudio==2.5.1
+transformers>=4.33.0,<4.37.0
+
+# Audio Processing
+numpy>=1.24.0
+scipy>=1.10.0
+librosa>=0.10.0
+soundfile>=0.12.0
+pydub>=0.25.0
+
+# Utilities
+python-dotenv>=1.0.0
+pyyaml>=6.0
+tqdm>=4.65.0
+
+# Web UI (optional)
+gradio==4.44.1
+
+# Recording
+sounddevice>=0.4.6

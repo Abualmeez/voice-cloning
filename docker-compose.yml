@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  voice-cloning:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: voice-cloning:latest
+    container_name: voice-cloning
+
+    # GPU support (NVIDIA)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    # Environment variables
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+    # Port mapping for web UI
+    ports:
+      - "7860:7860"
+
+    # Volume mounts (persist data)
+    volumes:
+      # Voice samples
+      - ./voices:/app/voices
+      # Generated outputs
+      - ./outputs:/app/outputs
+      # Downloaded models (cache)
+      - ./models:/app/models
+      # Optional: mount your own audio files
+      # - ~/my-voice-samples:/app/voices/my_voice
+
+    # Interactive terminal
+    stdin_open: true
+    tty: true
+
+    # Default command: web UI
+    # WARNING: Binds to all interfaces (0.0.0.0). For production:
+    #   - Use --host 127.0.0.1 and set up reverse proxy with authentication
+    #   - Or add --auth USERNAME PASSWORD to enable basic authentication
+    command: python3 web_ui.py --host 0.0.0.0 --port 7860
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Resource limits (optional)
+    # mem_limit: 16g
+    # cpus: "4"
+
+  # CLI service for one-off commands
+  voice-cloning-cli:
+    extends: voice-cloning
+    container_name: voice-cloning-cli
+    command: python3 cli.py --interactive
+    ports: []
+    profiles: ["cli"]
+
+# Networks
+networks:
+  default:
+    driver: bridge
+
+# Volumes (optional: named volumes instead of bind mounts)
+volumes:
+  models-cache:
+  voices-data:
+  outputs-data:
